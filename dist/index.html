@@ -38,11 +38,11 @@
       const list = document.getElementById("benchmark-result");
 
       const item1 = document.createElement("li");
-      item1.appendChild(document.createTextNode(`Javascript: ${resultJS.toFixed(3)} s`));
+      item1.appendChild(document.createTextNode(`Javascript: ${resultJS.toFixed(3)} ms`));
       list.appendChild(item1);
 
       const item2 = document.createElement("li");
-      item2.appendChild(document.createTextNode(`WebAssembly: ${resultWASM.toFixed(3)} s`));
+      item2.appendChild(document.createTextNode(`WebAssembly: ${resultWASM.toFixed(3)} ms`));
       list.appendChild(item2);
       benchmarkDone = true
     }
