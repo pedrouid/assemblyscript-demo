@@ -8,17 +8,52 @@
     ).then(bytes =>
       WebAssembly.instantiate(bytes, { imports: {} })
     ).then(results => {
-      window.fib = results.instance.exports.fib;
+      window.fibWASM = results.instance.exports.fib;
     });
+
+    function fibJS(n) {
+      let i, t, a = 0, b = 1;
+      for (i = 0; i < n; i++) {
+        t = a + b; a = b; b = t;
+      }
+      return b;
+    }
+
+    function benchmark(fn) {
+      const start = window.performance.now();
+      for (i = 0; i < 1000; i++) {
+        fn(i)
+      }
+      const end = window.performance.now();
+      return end - start;
+    }
+
+    let benchmarkDone = false
+
+    function onBenchmark() {
+      if (benchmarkDone) return
+      const resultJS = benchmark(fibJS)
+      const resultWASM = benchmark(fibWASM)
+
+      const list = document.getElementById("benchmark-result");
+
+      const item1 = document.createElement("li");
+      item1.appendChild(document.createTextNode(`Javascript: ${resultJS.toFixed(3)} s`));
+      list.appendChild(item1);
+
+      const item2 = document.createElement("li");
+      item2.appendChild(document.createTextNode(`WebAssembly: ${resultWASM.toFixed(3)} s`));
+      list.appendChild(item2);
+      benchmarkDone = true
+    }
 
     let index = 0
 
-    function onClick() {
-      const number = window.fib(index);
+    function onDemo() {
+      const number = fibWASM(index);
       index += 1;
       const list = document.getElementById("fibonacci-list");
       const item = document.createElement("li");
-      let elm = document.getElementById('fibonacci-list')
       item.appendChild(document.createTextNode(`${number}`));
       list.appendChild(item);
     }
@@ -59,17 +94,35 @@
     button:active {
       transform: translate3d(0, -1px, 0)
     }
+
+    div.flexbox-container {
+      display: flex;
+    }
   </style>
 </head>
 
 <body>
   <h1>Assemblyscript Demo</h1>
   <a href="https://github.com/pedrouid/assemblyscript-demo" target="_blank" rel="noopener noreferrer">Source code</a>
-  <p>
-    Click to get Fibonacci numbers
-  </p>
-  <button onclick="onClick()">Click</button>
-  <ol id="fibonacci-list"></ol>
+
+  <div class="flexbox-container">
+
+    <div>
+      <p>
+        Click to get Fibonacci numbers
+      </p>
+      <button onclick="onDemo()">Click</button>
+      <ol id="fibonacci-list"></ol>
+    </div>
+    <div>
+      <p>
+        Javascript vs WebAssembly (1000 loops)
+      </p>
+      <button onclick="onBenchmark()">Test</button>
+      <ul id="benchmark-result"></ul>
+    </div>
+  </div>
+
 </body>
 
 </html>
