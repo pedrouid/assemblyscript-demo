@@ -1,0 +1,71 @@
+<html>
+
+<head>
+  <title>Assemblyscript Demo</title>
+  <script>
+    fetch('fib.wasm').then(response =>
+      response.arrayBuffer()
+    ).then(bytes =>
+      WebAssembly.instantiate(bytes, { imports: {} })
+    ).then(results => {
+      window.fib = results.instance.exports.fib;
+    });
+    let index = 0
+    function onClick() {
+      const number = window.fib(index);
+      index += 1;
+      const list = document.getElementById("fibonacci-list");
+      const item = document.createElement("li");
+      let elm = document.getElementById('fibonacci-list')
+      item.appendChild(document.createTextNode(`${number}`));
+      list.appendChild(item);
+    }
+  </script>
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 20px;
+    }
+
+    p {
+      margin: 20px;
+    }
+
+    button {
+      transition: all 0.1s ease-in-out;
+      background: white;
+      color: black;
+      font-size: 16px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      margin: 10px 20px;
+      outline: none;
+    }
+
+    button:active {
+      transform: translate3d(0, -1px, 0)
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Assemblyscript Demo</h1>
+  <p>
+    Source code:
+  </p>
+
+  <p>
+    Click to get Fibonacci numbers
+  </p>
+  <button onclick="onClick()">Click</button>
+  <ol id="fibonacci-list"></ol>
+</body>
+
+</html>
